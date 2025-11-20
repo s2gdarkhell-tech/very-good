@@ -1,0 +1,183 @@
+-- Zortsaken - Keyed & Ready for Obfuscation
+repeat task.wait() until game:IsLoaded()
+task.wait(3)
+
+local Players = game:GetService("Players")
+local lp = Players.LocalPlayer
+local pgui = lp:WaitForChild("PlayerGui")
+
+local KEY = "zortyzorty"
+local DISCORD = "https://discord.gg/Rs8tCb8S"
+
+-- Key GUI
+local sg = Instance.new("ScreenGui")
+sg.Name = "ZortsakenKey"
+sg.ResetOnSpawn = false
+sg.Parent = pgui
+
+local frame = Instance.new("Frame", sg)
+frame.Size = UDim2.new(0, 360, 0, 210)
+frame.Position = UDim2.new(0.5, -180, 0.5, -105)
+frame.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
+frame.BorderSizePixel = 0
+local corner = Instance.new("UICorner", frame)
+corner.CornerRadius = UDim.new(0, 14)
+
+local title = Instance.new("TextLabel", frame)
+title.Text = "Zortsaken"
+title.Size = UDim2.new(1, 0, 0, 50)
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.new(1,1,1)
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 28
+
+local box = Instance.new("TextBox", frame)
+box.PlaceholderText = "Enter Key"
+box.Size = UDim2.new(0.8, 0, 0, 45)
+box.Position = UDim2.new(0.1, 0, 0.3, 0)
+box.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+box.TextColor3 = Color3.new(1,1,1)
+box.Font = Enum.Font.Gotham
+box.TextSize = 18
+Instance.new("UICorner", box).CornerRadius = UDim.new(0, 10)
+
+local status = Instance.new("TextLabel", frame)
+status.Size = UDim2.new(1, 0, 0, 30)
+status.Position = UDim2.new(0, 0, 0.6, 0)
+status.BackgroundTransparency = 1
+status.Text = ""
+status.Font = Enum.Font.GothamBold
+status.TextSize = 16
+
+local btn = Instance.new("TextButton", frame)
+btn.Text = "Join Discord for Key"
+btn.Size = UDim2.new(0.8, 0, 0, 45)
+btn.Position = UDim2.new(0.1, 0, 0.75, 0)
+btn.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+btn.TextColor3 = Color3.new(1,1,1)
+btn.Font = Enum.Font.GothamBold
+Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
+
+btn.MouseButton1Click:Connect(function()
+    setclipboard(DISCORD)
+    status.Text = "Link copied!"
+    status.TextColor3 = Color3.fromRGB(0, 255, 100)
+end)
+
+box.FocusLost:Connect(function(enter)
+    if enter and box.Text:lower() == KEY then
+        status.Text = "Access Granted!"
+        status.TextColor3 = Color3.fromRGB(0, 255, 100)
+        task.wait(1)
+        sg:Destroy()
+
+        -- MAIN SCRIPT STARTS HERE (Clean & Obfuscation-Ready)
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/ZortyxZ/Zortsaken/main/Zortsaken.lua"))()
+        -- OR paste the full script below instead of loadstring if you want it all in one file
+
+        -- FULL ZORTSAKEN SCRIPT (Paste here if not using loadstring)
+        local Compkiller = loadstring(game:HttpGet("https://raw.githubusercontent.com/4lpaca-pin/CompKiller/refs/heads/main/src/source.luau"))()
+        local Window = Compkiller.new({Name="Zortsaken - Mobile + PC",Keybind="LeftAlt",Logo="rbxassetid://120245531583106"})
+
+        local RS = game:GetService("ReplicatedStorage")
+        local WS = game:GetService("Workspace")
+        local VIM = game:GetService("VirtualInputManager")
+        local UIS = game:GetService("UserInputService")
+
+        local behavior = RS:WaitForChild("Assets"):WaitForChild("Survivors"):WaitForChild("Veeronica"):WaitForChild("Behavior")
+        local device = UIS.TouchEnabled and "Mobile" or "PC"
+        local active = false
+        local monitors = {}
+        local listener = nil
+
+        local function sprint()
+            if device == "Mobile" then
+                local btn = lp.PlayerGui:FindFirstChild("MainUI") and lp.PlayerGui.MainUI:FindFirstChild("SprintingButton")
+                if btn then
+                    for _,c in getconnections(btn.MouseButton1Down) do pcall(c.Fire, c) end
+                end
+            else
+                VIM:SendKeyEvent(true, Enum.KeyCode.LeftShift, false, game)
+                task.wait(0.05)
+                VIM:SendKeyEvent(false, Enum.KeyCode.LeftShift, false, game)
+            end
+        end
+
+        local function watch(hl)
+            if monitors[hl] then return end
+            local was = false
+            local cons = {}
+            local function check()
+                if not active then return end
+                local char = lp.Character
+                if not char or not hl.Parent then return end
+                local on = hl.Adornee and (hl.Adornee == char or hl.Adornee:IsDescendantOf(char))
+                if on and not was then sprint() end
+                was = on
+            end
+            table.insert(cons, hl:GetPropertyChangedSignal("Adornee"):Connect(check))
+            table.insert(cons, hl.AncestryChanged:Connect(check))
+            table.insert(cons, lp.CharacterAdded:Connect(check))
+            monitors[hl] = cons
+            task.spawn(check)
+        end
+
+        local function start()
+            if listener then return end
+            for _,v in behavior:GetDescendants() do if v:IsA("Highlight") then watch(v) end end
+            listener = behavior.DescendantAdded:Connect(function(c)
+                if c:IsA("Highlight") then task.wait() watch(c) end
+            end)
+        end
+
+        local function stop()
+            if listener then listener:Disconnect() listener = nil end
+            for _,c in monitors do for _,v in c do if v.Connected then v:Disconnect() end end end
+            monitors = {}
+        end
+
+        Window:DrawCategory({Name="Main"})
+        local tab = Window:DrawTab({Name="Features",Icon="settings-3"})
+        local sec = tab:DrawSection({Name="Main",Position="left"})
+
+        sec:AddToggle({Name="Infinite Stamina",Default=true,Callback=function(v)
+            if v then task.spawn(function()
+                while task.wait(0.1) do
+                    pcall(function()
+                        local m = require(RS.Systems.Character.Game.Sprinting)
+                        m.StaminaLossDisabled = true
+                        m.Stamina = m.MaxStamina
+                    end)
+                end
+            end) end
+        end})
+
+        sec:AddToggle({Name="Auto Generators",Default=true,Callback=function(v)
+            if v then task.spawn(function()
+                while task.wait(2) do
+                    pcall(function()
+                        for _,g in WS.Map.Ingame.Map:GetChildren() do
+                            if g.Name == "Generator" then
+                                local r = g.Remotes
+                                if r.RF then r.RF:InvokeServer() end
+                                if r.RE then r.RE:FireServer() end
+                            end
+                        end
+                    end)
+                end
+            end) end
+        end})
+
+        sec:AddToggle({Name="Auto Trick Veeronica (Wall Jump)",Default=true,Callback=function(v)
+            active = v
+            if v then start() else stop() end
+        end})
+
+        print("Zortsaken Loaded | Key Protected | discord.gg/Rs8tCb8S")
+    else
+        status.Text = "Wrong Key!"
+        status.TextColor3 = Color3.fromRGB(255, 80, 80)
+        task.wait(2)
+        status.Text = ""
+    end
+end)
